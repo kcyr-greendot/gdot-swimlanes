@@ -1,0 +1,160 @@
+.library-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.library-panel {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 800px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.library-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.library-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #666;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.library-search {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.library-search input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+}
+
+.library-search input:focus {
+  border-color: #00a651;
+}
+
+.library-content {
+  flex: 1;
+  overflow: auto;
+  padding: 1rem 1.5rem;
+}
+
+.library-loading {
+  padding: 3rem;
+  text-align: center;
+  color: #666;
+}
+
+.diagrams-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.diagrams-table thead th {
+  background: #f8f8f8;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.diagrams-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.diagrams-table th.sortable:hover {
+  background: #f0f0f0;
+}
+
+.diagrams-table tbody tr {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.diagram-row {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.diagram-row:hover {
+  background: #f8f8f8;
+}
+
+.diagrams-table td {
+  padding: 0.75rem 1rem;
+}
+
+.diagram-title {
+  font-weight: 500;
+  color: #333;
+}
+
+.diagram-date {
+  color: #666;
+  font-size: 13px;
+}
+
+.diagram-actions {
+  text-align: right;
+  width: 80px;
+}
+
+.delete-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.delete-btn:hover {
+  background: #ffe0e0;
+}
+
+.empty-message {
+  text-align: center;
+  color: #999;
+  padding: 3rem 1rem;
+  font-style: italic;
+}

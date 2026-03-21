@@ -1,0 +1,61 @@
+Title: Swimlanes Syntax Guide
+
+_: **1. Messages**
+One -> Two: Simple
+Two ->> Green Dot: Open arrow 
+Three -x Four: Lost message
+
+Three <-> Four: Bi-directional
+Four <-> Three: Test
+Two -> Two: To self
+
+Two -> One: Actors can be
+One -> Two: in any order
+One $-> Four: Funds Flow
+
+Two -> Three: Regular
+Two <-- Three: Dashed 
+Two => Three: Bold
+
+One -> Four: **Bold**, *Italic*, ~~strike~~ and `code`
+
+note: Add sequence numbers with **autonumber**
+// autonumber
+
+_: **2. Notes**
+
+Two -> Three: A note is closed by a following element
+
+note: A note spans the previous message by default
+
+note One, Three: Specify actors to change width
+note:
+   Simple text formatting: **bold**, *italic*, ~~strike~~ and `inline code`
+
+_: **3. Sections**
+
+if: Conditional flows with **if**
+Two -> Three: Message
+else: Alternative flow with **else**
+Two -> One: Message
+end
+
+group: Simple grouping with **group**
+  One -> Two: Message
+end
+
+_: **4. Dividers**
+
+_: thin
+-: regular
+--: dashed
+=: bold
+
+_: **5. Delay**
+
+...: Indicate a delay
+
+_: **6. Order**
+note: Change actor order with **order**
+// order: Three, Two, One, Four
+

@@ -1,0 +1,458 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
+}
+
+.app-header {
+  background: #000;
+  color: white;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-logo img {
+  height: 40px;
+  width: auto;
+}
+
+.header-logo span {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+}
+
+.app-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.header-actions button {
+  background: white;
+  color: #00a651;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.header-actions button:hover:not(:disabled) {
+  background: #f0f0f0;
+  transform: translateY(-1px);
+}
+
+.header-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.editor-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  max-width: 100%;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.editor-panel {
+  flex: 0 0 33.333%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  margin: 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  min-width: 0;
+  transition: flex 0.3s ease;
+}
+
+.editor-panel.collapsed {
+  flex: 0 0 60px;
+  min-width: 60px;
+}
+
+.collapsed-header {
+  justify-content: center;
+  align-items: center;
+}
+
+.diagram-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  margin: 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.panel-header {
+  background: #f8f8f8;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  border-bottom: 1px solid #e0e0e0;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 48px;
+  height: 48px;
+  box-sizing: border-box;
+  gap: 1rem;
+}
+
+.autosave-indicator {
+  font-size: 0.75rem;
+  color: #999;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.collapse-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+  filter: grayscale(1);
+}
+
+.collapse-btn.editor-active {
+  filter: grayscale(0);
+}
+
+.collapse-btn.editor-collapsed {
+  filter: grayscale(1) opacity(0.4);
+}
+
+.collapse-btn:hover {
+  background: rgba(0, 166, 81, 0.1);
+  filter: grayscale(0);
+}
+
+.editor {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+}
+
+.diagram-container {
+  flex: 1;
+  overflow: hidden;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+}
+
+.diagram-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+  font-style: italic;
+}
+
+.error {
+  padding: 1rem;
+  background: #ffe6e6;
+  color: #d00;
+  border-top: 1px solid #ffcccc;
+}
+
+/* SVG Styles */
+.sequence-diagram {
+  background: white;
+  padding: 20px;
+}
+
+.sequence-diagram .actor {
+  fill: #e3f2fd;
+  stroke: #1976d2;
+  stroke-width: 2;
+}
+
+.sequence-diagram .actor-text {
+  fill: #1976d2;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.sequence-diagram .lifeline {
+  stroke: #ccc;
+  stroke-width: 1;
+  stroke-dasharray: 5, 5;
+}
+
+.sequence-diagram .message {
+  stroke: #333;
+  stroke-width: 2;
+  fill: none;
+}
+
+.sequence-diagram .message.dashed {
+  stroke-dasharray: 5, 5;
+}
+
+.sequence-diagram .message.bold {
+  stroke-width: 3;
+}
+
+.sequence-diagram .message-label {
+  fill: #333;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.message-label-content {
+  font-size: 12px;
+  font-weight: 400;
+  color: #333;
+  text-align: center;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+}
+
+.message-label-content strong {
+  font-weight: 700;
+}
+
+.message-label-content em {
+  font-style: italic;
+}
+
+.message-label-content code,
+.section-label-content code,
+.note-content code {
+  background: #f5f5f5;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 11px;
+}
+
+.message-label-content del {
+  text-decoration: line-through;
+}
+
+.sequence-diagram .message.funds {
+  stroke: #00a651;
+}
+
+.funds-symbol {
+  fill: #00a651;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.sequence-diagram .arrow-marker {
+  fill: #333;
+}
+
+.sequence-diagram .arrow-marker-open {
+  fill: none;
+  stroke: #333;
+}
+
+.sequence-diagram .note {
+  fill: #fff9e6;
+  stroke: #ffa000;
+  stroke-width: 1;
+}
+
+.sequence-diagram .note-info {
+  fill: #e3f2fd;
+  stroke: #2196F3;
+  stroke-width: 2;
+}
+
+.sequence-diagram .note-caution {
+  fill: #fff3e0;
+  stroke: #FF9800;
+  stroke-width: 2;
+}
+
+.sequence-diagram .note-warning {
+  fill: #ffebee;
+  stroke: #f44336;
+  stroke-width: 2;
+}
+
+.note-content {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #333;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.note-content strong {
+  font-weight: 700;
+}
+
+.note-content em {
+  font-style: italic;
+}
+
+.note-content code {
+  background: #f5f5f5;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 11px;
+}
+
+.note-content pre {
+  background: #f5f5f5;
+  padding: 8px;
+  border-radius: 3px;
+  overflow-x: auto;
+  margin: 4px 0;
+}
+
+.sequence-diagram .divider {
+  stroke: #666;
+  stroke-width: 1;
+}
+
+.sequence-diagram .divider.thin {
+  stroke-width: 0.5;
+}
+
+.sequence-diagram .divider.bold {
+  stroke-width: 3;
+}
+
+.sequence-diagram .divider.dashed {
+  stroke-dasharray: 5, 5;
+}
+
+.sequence-diagram .divider-label {
+  fill: #333;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.divider-label-content {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.sequence-diagram .delay {
+  fill: #666;
+}
+
+.delay-box {
+  fill: rgba(255, 255, 255, 0.95);
+  stroke: #ccc;
+  stroke-width: 1;
+}
+
+.delay-spinner {
+  fill: #00a651;
+}
+
+.delay-label {
+  fill: #333;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.sequence-diagram .section {
+  fill: rgba(240, 240, 240, 0.5);
+  stroke: #999;
+  stroke-width: 1;
+  stroke-dasharray: 5, 5;
+}
+
+.sequence-diagram .section-label-bg {
+  fill: rgba(255, 255, 255, 0.9);
+}
+
+.sequence-diagram .section-label {
+  fill: #666;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.section-label-content {
+  font-size: 11px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.section-label-content strong {
+  font-weight: 700;
+}
+
+.section-label-content em {
+  font-style: italic;
+}
+
+.section-label-content del {
+  text-decoration: line-through;
+}
+
+.sequence-diagram .section-divider {
+  stroke: #999;
+  stroke-width: 1;
+}
+
+.sequence-diagram .title {
+  font-size: 18px;
+  font-weight: 700;
+  fill: #333;
+}
