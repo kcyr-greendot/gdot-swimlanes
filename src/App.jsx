@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { parse } from './parser';
 import { render } from './renderer';
 import DiagramRenderer from './DiagramRenderer';
@@ -38,6 +38,7 @@ function App() {
   const [lastSaved, setLastSaved] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [lastSavedText, setLastSavedText] = useState('');
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     try {
@@ -132,6 +133,31 @@ function App() {
       });
   };
 
+  const handleElementClick = (sourceLineNum) => {
+    console.log('Element clicked, line:', sourceLineNum);
+    if (sourceLineNum === undefined || !textareaRef.current) return;
+    
+    // Expand editor if collapsed
+    if (editorCollapsed) {
+      setEditorCollapsed(false);
+    }
+    
+    // Focus and select the line in the textarea
+    const lines = text.split('\n');
+    let charPosition = 0;
+    for (let i = 0; i < sourceLineNum; i++) {
+      charPosition += lines[i].length + 1; // +1 for newline
+    }
+    
+    const lineLength = lines[sourceLineNum]?.length || 0;
+    
+    setTimeout(() => {
+      textareaRef.current.focus();
+      textareaRef.current.setSelectionRange(charPosition, charPosition + lineLength);
+      textareaRef.current.scrollTop = Math.max(0, sourceLineNum * 20 - 100);
+    }, 100);
+  };
+
   return (
     <div className="app">
       <header className="app-header">
@@ -173,6 +199,7 @@ function App() {
                 </button>
               </div>
               <textarea
+                ref={textareaRef}
                 className="editor"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
@@ -204,7 +231,7 @@ function App() {
             )}
           </div>
           <div className="diagram-container">
-            <DiagramRenderer diagram={diagram} />
+            <DiagramRenderer diagram={diagram} onElementClick={handleElementClick} />
           </div>
         </div>
       </div>

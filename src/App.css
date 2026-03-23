@@ -276,6 +276,20 @@ body {
   font-size: 11px;
 }
 
+.note-content a,
+.message-label-content a,
+.section-label-content a {
+  color: #1976D2;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.note-content a:hover,
+.message-label-content a:hover,
+.section-label-content a:hover {
+  color: #1565C0;
+}
+
 .message-label-content del {
   text-decoration: line-through;
 }
@@ -288,6 +302,10 @@ body {
   fill: #00a651;
   font-size: 14px;
   font-weight: 700;
+}
+
+.sequence-diagram g[style*="cursor: pointer"]:hover {
+  opacity: 0.8;
 }
 
 .sequence-diagram .arrow-marker {

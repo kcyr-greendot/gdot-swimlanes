@@ -14,6 +14,7 @@ export function parse(text) {
   while (lineNum < lines.length) {
     const line = lines[lineNum].trim();
     const lineLower = line.toLowerCase();
+    const sourceLineNum = lineNum; // Track original line number (0-indexed)
     lineNum++;
 
     if (!line || line.startsWith('//')) continue;
@@ -79,7 +80,7 @@ export function parse(text) {
       if (match) {
         const style = match[1][0];
         const label = match[2];
-        const element = { type: 'divider', style, label };
+        const element = { type: 'divider', style, label, sourceLineNum };
         addElement(ast, sectionStack, element);
         continue;
       }
@@ -126,7 +127,7 @@ export function parse(text) {
         ast.actors.add(startActor);
         ast.actors.add(endActor);
         const noteText = actorMatch[3];
-        const element = { type: 'note', text: noteText, startActor, endActor, fullWidth, noteType };
+        const element = { type: 'note', text: noteText, startActor, endActor, fullWidth, noteType, sourceLineNum };
         addElement(ast, sectionStack, element);
       } else {
         // Multi-line note - continues until next element tag or 'end'
@@ -145,7 +146,7 @@ export function parse(text) {
           noteLines.push(nextLine);
           lineNum++;
         }
-        const element = { type: 'note', text: noteLines.join('\n'), fullWidth, noteType };
+        const element = { type: 'note', text: noteLines.join('\n'), fullWidth, noteType, sourceLineNum };
         addElement(ast, sectionStack, element);
       }
       continue;
@@ -167,7 +168,8 @@ export function parse(text) {
         from,
         to,
         arrow,
-        text
+        text,
+        sourceLineNum
       };
 
       addElement(ast, sectionStack, element);

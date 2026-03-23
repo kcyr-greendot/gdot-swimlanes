@@ -158,6 +158,7 @@ function renderMessage(ctx, msg, indent) {
       y: y,
       label,
       labelHeight,
+      sourceLineNum: msg.sourceLineNum,
       ...arrow,
       indent
     });
@@ -172,6 +173,7 @@ function renderMessage(ctx, msg, indent) {
       y2: y,
       label,
       labelHeight,
+      sourceLineNum: msg.sourceLineNum,
       ...arrow,
       indent
     });
@@ -218,7 +220,8 @@ function renderNote(ctx, note, indent) {
     height,
     text,
     indent,
-    noteType: note.noteType || 'default'
+    noteType: note.noteType || 'default',
+    sourceLineNum: note.sourceLineNum
   });
 
   ctx.y += height + 10;
@@ -327,6 +330,9 @@ function processMarkdown(text) {
   
   // Convert Font Awesome icons
   text = text.replace(/\{(fa[bslrd])-([^}]+)\}/g, '<i class="$1 fa-$2"></i>');
+  
+  // Convert links [text](url)
+  text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
   
   // Simple markdown inline processing
   text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');

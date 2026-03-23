@@ -9,13 +9,13 @@ const CONFIG = {
   arrowSize: 8
 };
 
-export default function DiagramRenderer({ diagram }) {
+export default function DiagramRenderer({ diagram, onElementClick }) {
   const svgRef = useRef();
   const containerRef = useRef();
 
   useEffect(() => {
     if (!diagram || !svgRef.current) return;
-    renderSVG(svgRef.current, diagram);
+    renderSVG(svgRef.current, diagram, onElementClick);
     
     // Scale to fit container
     const container = containerRef.current;
@@ -34,7 +34,7 @@ export default function DiagramRenderer({ diagram }) {
       svg.style.transformOrigin = 'top left';
       container.style.height = `${diagram.height * scale + 40}px`;
     }
-  }, [diagram]);
+  }, [diagram, onElementClick]);
 
   if (!diagram) return <div className="diagram-empty">Enter syntax to see diagram</div>;
 
@@ -50,7 +50,7 @@ export default function DiagramRenderer({ diagram }) {
   );
 }
 
-function renderSVG(svg, diagram) {
+function renderSVG(svg, diagram, onElementClick) {
   svg.innerHTML = '';
 
   // Add defs for markers
@@ -76,40 +76,54 @@ function renderSVG(svg, diagram) {
 
   // Render elements
   diagram.elements.forEach(element => {
+    let g;
     switch (element.type) {
       case 'rect':
-        svg.appendChild(createRect(element));
+        g = createRect(element);
         break;
       case 'text':
-        svg.appendChild(createText(element));
+        g = createText(element);
         break;
       case 'actor-image':
-        svg.appendChild(createActorImage(element));
+        g = createActorImage(element);
         break;
       case 'line':
-        svg.appendChild(createLine(element));
+        g = createLine(element);
         break;
       case 'arrow':
-        svg.appendChild(createArrow(element));
+        g = createArrow(element);
         break;
       case 'self-arrow':
-        svg.appendChild(createSelfArrow(element));
+        g = createSelfArrow(element);
         break;
       case 'note':
-        svg.appendChild(createNote(element));
+        g = createNote(element);
         break;
       case 'divider':
-        svg.appendChild(createDivider(element));
+        g = createDivider(element);
         break;
       case 'delay':
-        svg.appendChild(createDelay(element));
+        g = createDelay(element);
         break;
       case 'section':
-        svg.appendChild(createSection(element));
+        g = createSection(element);
         break;
       case 'section-divider':
-        svg.appendChild(createSectionDivider(element));
+        g = createSectionDivider(element);
         break;
+    }
+    
+    if (g) {
+      // Add click handler to navigate to source
+      if (element.sourceLineNum !== undefined && onElementClick) {
+        g.style.cursor = 'pointer';
+        g.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onElementClick(element.sourceLineNum);
+        });
+      }
+      svg.appendChild(g);
     }
   });
 }
