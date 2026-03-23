@@ -90,7 +90,8 @@ export function parse(text) {
     if (lineLower.startsWith('note:') || lineLower.startsWith('note ') || lineLower.startsWith('note[') ||
         lineLower.startsWith('note-i:') || lineLower.startsWith('note-i[') || lineLower.startsWith('note-i ') ||
         lineLower.startsWith('note-!:') || lineLower.startsWith('note-![') || lineLower.startsWith('note-! ') ||
-        lineLower.startsWith('note-x:') || lineLower.startsWith('note-x[') || lineLower.startsWith('note-x ')) {
+        lineLower.startsWith('note-x:') || lineLower.startsWith('note-x[') || lineLower.startsWith('note-x ') ||
+        lineLower.startsWith('note-b:') || lineLower.startsWith('note-b[') || lineLower.startsWith('note-b ')) {
       let content = line.substring(4).trim();
       let fullWidth = false;
       let startActor = null, endActor = null;
@@ -105,6 +106,9 @@ export function parse(text) {
         content = line.substring(6).trim();
       } else if (lineLower.startsWith('note-x')) {
         noteType = 'warning';
+        content = line.substring(6).trim();
+      } else if (lineLower.startsWith('note-b')) {
+        noteType = 'idea';
         content = line.substring(6).trim();
       }
       

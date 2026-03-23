@@ -58,17 +58,57 @@ function App() {
     }
   }, [text, lastSavedText]);
 
+  // Autosave every 30 seconds
+  useEffect(() => {
+    if (!currentFilename || !hasUnsavedChanges) return; // Only autosave if we have a file and changes
+    
+    const autoSaveTimer = setInterval(() => {
+      if (hasUnsavedChanges) {
+        saveDiagram(text);
+      }
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(autoSaveTimer);
+  }, [currentFilename, hasUnsavedChanges, text]);
+
   const saveDiagram = async (content) => {
+    // Safety check: don't save if no current filename (e.g., Syntax Guide)
+    if (!currentFilename) {
+      console.log('No filename set - creating new diagram file');
+      // This should only happen on first save after "New" button
+      const timestamp = Date.now();
+      const newFilename = `diagram-${timestamp}.txt`;
+      
+      try {
+        const response = await fetch('/api/diagrams/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content, filename: newFilename })
+        });
+        const data = await response.json();
+        if (data.success) {
+          setCurrentFilename(newFilename);
+          localStorage.setItem('swimlanes-current-file', newFilename);
+          setLastSaved(new Date());
+          setLastSavedText(content);
+          setHasUnsavedChanges(false);
+        }
+      } catch (err) {
+        console.error('Failed to save:', err);
+        alert('Failed to save diagram');
+      }
+      return;
+    }
+    
+    // Update existing file
     try {
       const response = await fetch('/api/diagrams/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content, currentFilename })
+        body: JSON.stringify({ content, filename: currentFilename })
       });
       const data = await response.json();
-      if (data.filename) {
-        setCurrentFilename(data.filename);
-        localStorage.setItem('swimlanes-current-file', data.filename);
+      if (data.success) {
         setLastSaved(new Date());
         setLastSavedText(content);
         setHasUnsavedChanges(false);
@@ -103,11 +143,14 @@ function App() {
 
   const handleNew = () => {
     if (confirm('Create a new diagram? Current diagram will be replaced.')) {
+      const timestamp = Date.now();
+      const newFilename = `diagram-${timestamp}.txt`;
+      
       setText(NEW_DIAGRAM);
-      setCurrentFilename(null);
-      localStorage.removeItem('swimlanes-current-file');
+      setCurrentFilename(newFilename);
+      localStorage.setItem('swimlanes-current-file', newFilename);
       setLastSavedText('');
-      setHasUnsavedChanges(false);
+      setHasUnsavedChanges(true); // Mark as having changes so it will save
     }
   };
 
@@ -115,18 +158,24 @@ function App() {
     setShowLibrary(!showLibrary);
   };
 
-  const handleLoadDiagram = (content) => {
+  const handleLoadDiagram = (content, filename) => {
     setText(content);
-    setCurrentFilename(null); // Will be set on first save
-    localStorage.removeItem('swimlanes-current-file');
-    setLastSavedText('');
+    setCurrentFilename(filename); // Set the filename so updates save to same file
+    localStorage.setItem('swimlanes-current-file', filename);
+    setLastSavedText(content);
     setHasUnsavedChanges(false);
   };
 
   const handleLoadExample = () => {
     fetch('/syntax-guide.txt')
       .then(res => res.text())
-      .then(content => setText(content))
+      .then(content => {
+        setText(content);
+        setCurrentFilename(null); // Syntax guide is not saveable
+        localStorage.removeItem('swimlanes-current-file');
+        setLastSavedText('');
+        setHasUnsavedChanges(false);
+      })
       .catch(err => {
         console.error('Failed to load syntax guide:', err);
         setText(FULL_SYNTAX_EXAMPLE);
@@ -169,7 +218,7 @@ function App() {
           <button onClick={handleNew} title="Create new diagram">
             ➕ New
           </button>
-          <button onClick={handleSave} disabled={!hasUnsavedChanges} title="Save diagram">
+          <button onClick={handleSave} disabled={!hasUnsavedChanges || !currentFilename} title="Save diagram" style={{ display: currentFilename ? 'inline-block' : 'none' }}>
             💾 Save
           </button>
           <button onClick={handleLibrary} title="View saved diagrams">

@@ -65,7 +65,7 @@ export function render(ast) {
   renderActors(ctx, ctx.y);
 
   // Calculate total height after bottom actors
-  const totalHeight = ctx.y + CONFIG.actorHeight + 40;
+  const totalHeight = ctx.y + CONFIG.actorHeight + 50; // Increased from 40 to 50 for full border visibility
 
   // Combine: backgrounds first, then foreground elements
   const allElements = [...ctx.backgroundElements, ...ctx.elements];
@@ -188,9 +188,7 @@ function renderMessage(ctx, msg, indent) {
 
 function renderNote(ctx, note, indent) {
   const text = processMarkdown(note.text);
-  const lines = text.split('\n').length;
-  const height = Math.max(CONFIG.noteMinHeight, lines * 24 + 30);
-
+  
   let x, width;
   if (note.fullWidth) {
     // Full width: span from first to last actor
@@ -214,6 +212,14 @@ function renderNote(ctx, note, indent) {
       width = CONFIG.actorWidth * 2;
     }
   }
+
+  // Calculate height based on text wrapping within the note width
+  const textLength = note.text.length;
+  const charsPerLine = Math.max(20, Math.floor((width - 20) / 7)); // ~7px per char, minus padding
+  const wrappedLines = Math.ceil(textLength / charsPerLine);
+  const explicitLines = text.split('\n').length;
+  const totalLines = Math.max(wrappedLines, explicitLines);
+  const height = Math.max(CONFIG.noteMinHeight, totalLines * 20 + 50); // 20px line height + 50px padding for buffer
 
   ctx.elements.push({
     type: 'note',
@@ -266,6 +272,9 @@ function renderDelay(ctx, delay) {
 }
 
 function renderSection(ctx, section, indent) {
+  // Add spacing before section (matching after spacing)
+  ctx.y += CONFIG.messageHeight - 10;
+  
   const startY = ctx.y;
   const sectionX = ctx.x - 10 + indent * CONFIG.sectionPadding;
 

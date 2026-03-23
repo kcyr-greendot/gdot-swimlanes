@@ -23,7 +23,7 @@ app.get('/api/diagrams', async (req, res) => {
       if (file.endsWith('.txt')) {
         const filePath = path.join(DIAGRAMS_DIR, file);
         const content = await fs.readFile(filePath, 'utf-8');
-        const titleMatch = content.match(/^title:\s*(.+)/m);
+        const titleMatch = content.match(/^\s*title:\s*(.+)/mi);
         const title = titleMatch ? titleMatch[1].trim() : file.replace('.txt', '');
         const stats = await fs.stat(filePath);
         
@@ -46,39 +46,22 @@ app.get('/api/diagrams', async (req, res) => {
 // Save a diagram
 app.post('/api/diagrams/save', async (req, res) => {
   try {
-    const { content, currentFilename } = req.body;
-    
-    // Extract title from content (case-insensitive)
-    const titleMatch = content.match(/^title:\s*(.+)/mi);
-    let title = titleMatch ? titleMatch[1].trim() : 'Untitled';
-    
-    // Sanitize filename
-    let filename = title.replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').toLowerCase();
-    if (!filename) filename = 'untitled';
-    
-    let filePath = path.join(DIAGRAMS_DIR, `${filename}.txt`);
-    
-    // If we have a current filename, update that file instead
-    if (currentFilename) {
-      filePath = path.join(DIAGRAMS_DIR, currentFilename);
-      filename = currentFilename.replace('.txt', '');
-    } else {
-      // New file - check for conflicts
-      try {
-        await fs.access(filePath);
-        // File exists - add timestamp
-        const timestamp = Date.now();
-        filename = `${filename}-${timestamp}`;
-        filePath = path.join(DIAGRAMS_DIR, `${filename}.txt`);
-      } catch {
-        // File doesn't exist, no conflict
-      }
-    }
+    const { content, filename } = req.body;
     
     await fs.mkdir(DIAGRAMS_DIR, { recursive: true });
+    
+    let finalFilename = filename;
+    
+    // If no filename provided, generate new one with timestamp
+    if (!finalFilename) {
+      const timestamp = Date.now();
+      finalFilename = `diagram-${timestamp}.txt`;
+    }
+    
+    const filePath = path.join(DIAGRAMS_DIR, finalFilename);
     await fs.writeFile(filePath, content, 'utf-8');
     
-    res.json({ success: true, filename: `${filename}.txt` });
+    res.json({ success: true, filename: finalFilename });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -55,8 +55,8 @@ function Library({ onClose, onLoad }) {
     }
   };
 
-  const handleLoad = (content) => {
-    onLoad(content);
+  const handleLoad = (content, filename) => {
+    onLoad(content, filename);
     onClose();
   };
 
@@ -116,7 +116,7 @@ function Library({ onClose, onLoad }) {
                   </tr>
                 ) : (
                   filteredDiagrams.map((d) => (
-                    <tr key={d.filename} onClick={() => handleLoad(d.content)} className="diagram-row">
+                    <tr key={d.filename} onClick={() => handleLoad(d.content, d.filename)} className="diagram-row">
                       <td className="diagram-title">{d.title}</td>
                       <td className="diagram-date">{formatDate(d.modified)}</td>
                       <td className="diagram-actions">

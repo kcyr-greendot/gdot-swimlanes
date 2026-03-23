@@ -356,6 +356,12 @@ body {
   stroke-width: 2;
 }
 
+.sequence-diagram .note-idea {
+  fill: #e8f5e9;
+  stroke: #00A651;
+  stroke-width: 2;
+}
+
 .note-content {
   font-size: 12px;
   line-height: 1.5;

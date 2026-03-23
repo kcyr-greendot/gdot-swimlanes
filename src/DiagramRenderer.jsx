@@ -515,6 +515,79 @@ function createNote(element) {
       text.setAttribute('font-size', '16');
       text.textContent = '×';
       g.appendChild(text);
+    } else if (noteType === 'idea') {
+      // Green lightbulb icon - improved design
+      const bulb = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      bulb.setAttribute('transform', `translate(${iconX}, ${iconY})`);
+      
+      // Light rays emanating from bulb
+      const rays = [
+        { x1: 10, y1: 2, x2: 10, y2: -2 },      // top
+        { x1: 15, y1: 4, x2: 19, y2: 2 },       // top-right
+        { x1: 17, y1: 8, x2: 21, y2: 8 },       // right
+        { x1: 5, y1: 4, x2: 1, y2: 2 },         // top-left
+        { x1: 3, y1: 8, x2: -1, y2: 8 }         // left
+      ];
+      
+      rays.forEach(ray => {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', ray.x1);
+        line.setAttribute('y1', ray.y1);
+        line.setAttribute('x2', ray.x2);
+        line.setAttribute('y2', ray.y2);
+        line.setAttribute('stroke', '#FFD700');
+        line.setAttribute('stroke-width', '2');
+        line.setAttribute('stroke-linecap', 'round');
+        bulb.appendChild(line);
+      });
+      
+      // Bulb outline (pear shape)
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M 10 2 C 6 2 4 4 4 7 C 4 9 5 10 6 11 L 6 14 L 14 14 L 14 11 C 15 10 16 9 16 7 C 16 4 14 2 10 2 Z');
+      path.setAttribute('fill', '#FFD700');
+      path.setAttribute('stroke', '#00A651');
+      path.setAttribute('stroke-width', '1.5');
+      bulb.appendChild(path);
+      
+      // Base threads
+      const thread1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      thread1.setAttribute('x1', '6');
+      thread1.setAttribute('y1', '14');
+      thread1.setAttribute('x2', '14');
+      thread1.setAttribute('y2', '14');
+      thread1.setAttribute('stroke', '#00A651');
+      thread1.setAttribute('stroke-width', '1.5');
+      bulb.appendChild(thread1);
+      
+      const thread2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      thread2.setAttribute('x1', '6');
+      thread2.setAttribute('y1', '16');
+      thread2.setAttribute('x2', '14');
+      thread2.setAttribute('y2', '16');
+      thread2.setAttribute('stroke', '#00A651');
+      thread2.setAttribute('stroke-width', '1.5');
+      bulb.appendChild(thread2);
+      
+      // Base cap
+      const cap = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      cap.setAttribute('x', '7');
+      cap.setAttribute('y', '17');
+      cap.setAttribute('width', '6');
+      cap.setAttribute('height', '2');
+      cap.setAttribute('fill', '#00A651');
+      cap.setAttribute('rx', '1');
+      bulb.appendChild(cap);
+      
+      // Shine effect
+      const shine = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      shine.setAttribute('cx', '8');
+      shine.setAttribute('cy', '5');
+      shine.setAttribute('r', '1.5');
+      shine.setAttribute('fill', 'white');
+      shine.setAttribute('opacity', '0.8');
+      bulb.appendChild(shine);
+      
+      g.appendChild(bulb);
     }
   }
 
