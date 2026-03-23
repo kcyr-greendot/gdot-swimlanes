@@ -185,6 +185,19 @@ body {
   background: #fafafa;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+.diagram-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: #fafafa;
+  z-index: 8;
+  pointer-events: none;
 }
 
 .diagram-empty {
@@ -209,13 +222,15 @@ body {
   padding: 20px;
 }
 
-.sequence-diagram .actor {
+.sequence-diagram .actor,
+.sequence-diagram-header .actor {
   fill: #e3f2fd;
   stroke: #1976d2;
   stroke-width: 2;
 }
 
-.sequence-diagram .actor-text {
+.sequence-diagram .actor-text,
+.sequence-diagram-header .actor-text {
   fill: #1976d2;
   font-weight: 600;
   font-size: 14px;

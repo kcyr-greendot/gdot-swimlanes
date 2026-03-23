@@ -51,9 +51,6 @@ export function render(ast) {
   // Process elements
   processElements(ast.elements, ctx, 0);
 
-  // Calculate total height
-  const totalHeight = ctx.y + CONFIG.actorHeight + 40;
-
   // Update lifeline heights
   ctx.backgroundElements.forEach(line => {
     if (line.type === 'line' && line.className === 'lifeline') {
@@ -61,11 +58,17 @@ export function render(ast) {
     }
   });
 
-  // Combine: backgrounds first, then foreground elements
-  const allElements = [...ctx.backgroundElements, ...ctx.elements];
+  // Add padding before bottom actors (matching top)
+  ctx.y += 20;
 
   // Render actor boxes at bottom
   renderActors(ctx, ctx.y);
+
+  // Calculate total height after bottom actors
+  const totalHeight = ctx.y + CONFIG.actorHeight + 40;
+
+  // Combine: backgrounds first, then foreground elements
+  const allElements = [...ctx.backgroundElements, ...ctx.elements];
 
   return { elements: allElements, width: totalWidth, height: totalHeight, title: ast.title };
 }

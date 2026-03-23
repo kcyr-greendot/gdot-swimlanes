@@ -11,15 +11,22 @@ const CONFIG = {
 
 export default function DiagramRenderer({ diagram, onElementClick }) {
   const svgRef = useRef();
+  const headerSvgRef = useRef();
   const containerRef = useRef();
 
   useEffect(() => {
-    if (!diagram || !svgRef.current) return;
+    if (!diagram || !svgRef.current || !headerSvgRef.current) return;
+    
+    // Render main diagram
     renderSVG(svgRef.current, diagram, onElementClick);
+    
+    // Render sticky header actors (copy from main diagram)
+    renderStickyActors(headerSvgRef.current, diagram);
     
     // Scale to fit container
     const container = containerRef.current;
     const svg = svgRef.current;
+    const headerSvg = headerSvgRef.current;
     if (container && svg) {
       const containerWidth = container.clientWidth - 40; // Account for padding
       const diagramWidth = diagram.width;
@@ -30,8 +37,16 @@ export default function DiagramRenderer({ diagram, onElementClick }) {
       let scale = Math.min(containerWidth / diagramWidth, maxScale);
       scale = Math.max(scale, minScale);
       
+      // Apply same scale to both SVGs
       svg.style.transform = `scale(${scale})`;
       svg.style.transformOrigin = 'top left';
+      headerSvg.style.transform = `scale(${scale})`;
+      headerSvg.style.transformOrigin = 'top left';
+      
+      // Constrain the sticky header width to match scaled size
+      headerSvg.style.maxWidth = `${diagram.width * scale}px`;
+      headerSvg.style.display = 'block';
+      
       container.style.height = `${diagram.height * scale + 40}px`;
     }
   }, [diagram, onElementClick]);
@@ -39,15 +54,54 @@ export default function DiagramRenderer({ diagram, onElementClick }) {
   if (!diagram) return <div className="diagram-empty">Enter syntax to see diagram</div>;
 
   return (
-    <div ref={containerRef} style={{ overflow: 'auto', padding: '20px' }}>
+    <div ref={containerRef} style={{ overflow: 'auto', padding: '20px', position: 'relative' }}>
+      {/* Sticky actor header - positioned over the diagram */}
+      <svg 
+        ref={headerSvgRef}
+        width={diagram.width}
+        height={100}
+        className="sequence-diagram-header"
+        style={{
+          position: 'sticky',
+          top: '20px',
+          zIndex: 10,
+          pointerEvents: 'none',
+          backgroundColor: 'white',
+          paddingLeft: '20px',
+          paddingTop: '20px'
+        }}
+      />
+      
+      {/* Main diagram - positioned at top */}
       <svg 
         ref={svgRef}
         width={diagram.width}
         height={diagram.height}
         className="sequence-diagram"
+        style={{ marginTop: '-100px' }}
       />
     </div>
   );
+}
+
+function renderStickyActors(svg, diagram) {
+  svg.innerHTML = '';
+  
+  // Add the same defs as main diagram for consistent styling
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  svg.appendChild(defs);
+  
+  // Only render top actor elements
+  diagram.elements.forEach(element => {
+    if (element.y < 100 && (element.type === 'rect' || element.type === 'text' || element.type === 'actor-image')) {
+      let el;
+      if (element.type === 'rect') el = createRect(element);
+      else if (element.type === 'text') el = createText(element);
+      else if (element.type === 'actor-image') el = createActorImage(element);
+      
+      if (el) svg.appendChild(el);
+    }
+  });
 }
 
 function renderSVG(svg, diagram, onElementClick) {
